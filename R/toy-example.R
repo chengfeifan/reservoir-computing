@@ -44,8 +44,11 @@ matplot( t(X[(1:6),(1:100)]), type='l' )
 title(main=expression(paste('Some reservoir activations ', bold(x)(italic(n)))))
 
 # regression
-rownames(X)<-paste("x",c(1:100))
+rownames(X)<-paste("x",c(1:100),sep="")
 Y<-Yt[(initLen+1):(trainLen)]
+
 X<-t(X)
-Y
+dataRegress<-cbind(Y,X)
+dataRegress<-as.data.frame(dataRegress)
+fit<-lm(Y~.,data = dataRegress)
 
