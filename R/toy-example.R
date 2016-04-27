@@ -12,6 +12,7 @@ title('input signal')
 ###define the initial length and train length
 initLen<-100
 trainLen<-300
+testLen<-500
 
 # generate the ESN reservoir 100
 inSize = outSize = 1
@@ -25,13 +26,13 @@ rhoW = abs(eigen(W,only.values=TRUE)$values[1])
 print('done.')
 
 # allocated memory for the design (collected states) matrix
-X = matrix(0,resSize,trainLen-initLen)
+X = matrix(0,resSize,testLen-initLen)
 # set the corresponding target matrix directly
 Yt = 1/2*(sin(uLen/5))^7
 
 # run the reservoir with the data and collect X
 x = rep(0,resSize)
-for (t in 1:trainLen){
+for (t in 1:testLen){
   un = u[t]
   x = tanh( Win %*% un + W %*% x )
   if (t > initLen)
@@ -45,6 +46,7 @@ title(main=expression(paste('Some reservoir activations ', bold(x)(italic(n)))))
 
 # regression
 rownames(X)<-paste("x",c(1:100),sep="")
+<<<<<<< HEAD
 Y<-Yt[(initLen+1):(trainLen)]
 
 X<-t(X)
@@ -52,4 +54,29 @@ dataRegress<-cbind(Y,X)
 dataRegress<-as.data.frame(dataRegress)
 fit<-lm(Y~.,data = dataRegress)
 
+=======
+Y<-atanh(Yt[(initLen+1):(trainLen)])
+Xtrain<-t(X)[1:(trainLen-initLen),]
+Xtest<-t(X)[(trainLen-initLen+1):(testLen-initLen),]
+regressData<-cbind(Y,Xtrain)
+regressData<-as.data.frame(regressData)
+fit<-lm(Y~.,data=regressData)
+yteach<-fitted(fit)
+sum((yteach-Y)^2)/200
+dev.new()
+plot(Y,type='l',col="blue")
+lines(yteach,col="green")
+
+# predict
+Xtest<-as.data.frame(Xtest)
+yPredict<-predict(fit,Xtest)
+Ytest<-atanh(Yt[(trainLen+1):(testLen)])
+sum((Ytest-yPredict)^2)/200
+dev.new()
+plot(Y,type='l',col="blue")
+lines(yteach,col="green")
+
+
+# use the edge regression
+>>>>>>> 3087280e3f36819f9a3d7e00e2fa6e3bcaf99feb
 
