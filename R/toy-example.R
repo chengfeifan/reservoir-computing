@@ -46,13 +46,6 @@ title(main=expression(paste('Some reservoir activations ', bold(x)(italic(n)))))
 
 # regression
 rownames(X)<-paste("x",c(1:100),sep="")
-Y<-Yt[(initLen+1):(trainLen)]
-
-X<-t(X)
-dataRegress<-cbind(Y,X)
-dataRegress<-as.data.frame(dataRegress)
-fit<-lm(Y~.,data = dataRegress)
-
 Y<-atanh(Yt[(initLen+1):(trainLen)])
 Xtrain<-t(X)[1:(trainLen-initLen),]
 Xtest<-t(X)[(trainLen-initLen+1):(testLen-initLen),]
@@ -76,4 +69,3 @@ lines(yteach,col="green")
 
 
 # use the edge regression
-
