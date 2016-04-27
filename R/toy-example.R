@@ -52,3 +52,4 @@ dataRegress<-cbind(Y,X)
 dataRegress<-as.data.frame(dataRegress)
 fit<-lm(Y~.,data = dataRegress)
 
+
