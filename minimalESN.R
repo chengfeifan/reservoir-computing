@@ -1,7 +1,3 @@
-# A minimalistic Echo State Networks demo with Mackey-Glass (delay 17) data 
-# in "plain" R.
-# by Mantas Lukosevicius 2012
-# http://minds.jacobs-university.de/mantas
 
 rm(list=ls())
 # load the data
@@ -16,6 +12,8 @@ while( dev.cur() != 1 ) dev.off() # close all previous plots
 dev.new()
 plot(data[1:1000],type='l')
 title(main='A sample of data')
+dev.new()
+plot(data[1:9983,],data[18:10000],type='l' ,xlab = expression('x'[Tau]),ylab = expression('x'[Tau+17]))
 
 # generate the ESN reservoir
 inSize = outSize = 1
