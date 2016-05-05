@@ -10,7 +10,7 @@ data = as.matrix(read.table('MackeyGlass_t17.txt'))
 # plot some of it
 while( dev.cur() != 1 ) dev.off() # close all previous plots
 dev.new()
-plot(data[1:1000],type='l')
+plot(data[1:1000],type='l',xlab = 'Time',ylab = 'y')
 title(main='A sample of data')
 dev.new()
 plot(data[1:9983,],data[18:10000],type='l' ,xlab = expression('x'[Tau]),ylab = expression('x'[Tau+17]))
