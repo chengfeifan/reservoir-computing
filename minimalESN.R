@@ -50,6 +50,7 @@ reg = 1e-8  # regularization coefficient
 X_T = t(X)
 Wout = Yt %*% X_T %*% solve( X %*% X_T + reg*diag(1+inSize+resSize) )
 
+(mseTrain<-sum((Yt-Wout%*%X)^2)/trainLen)
 # run the trained ESN in a generative mode. no need to initialize here, 
 # because x is initialized with training data and we continue from there.
 Y = matrix(0,outSize,testLen)

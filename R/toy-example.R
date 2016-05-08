@@ -6,8 +6,8 @@ u<-sin(uLen/5)
 # plot some of it
 while( dev.cur() != 1 ) dev.off() # close all previous plots
 dev.new()
-plot(u[1:1000],type='l')
-title('input signal')
+plot(u[1:100],type='l',xlab = 'n',ylab = 'u(n)',
+     main='Input signal',cex.main=1.5,cex.lab=1.5,lwd=6,cex.axis=1.5)
 
 ###define the initial length and train length
 initLen<-100
@@ -29,6 +29,11 @@ print('done.')
 X = matrix(0,resSize,testLen-initLen)
 # set the corresponding target matrix directly
 Yt = 1/2*(sin(uLen/5))^7
+
+# plot y
+dev.new()
+plot(Yt[1:100],main='Output signal',type='l',xlab = 'n',ylab = 'y(n)',
+     cex.main=1.5,cex.lab=1.5,lwd=6)
 
 # run the reservoir with the data and collect X
 x = rep(0,resSize)
@@ -63,9 +68,15 @@ Xtest<-as.data.frame(Xtest)
 yPredict<-predict(fit,Xtest)
 Ytest<-atanh(Yt[(trainLen+1):(testLen)])
 sum((Ytest-yPredict)^2)/200
-dev.new()
-plot(Y,type='l',col="blue")
-lines(yteach,col="green")
-
+# dev.new()
+# plot(Y,type='l',col="blue")
+# lines(yteach,col="green")
+dev.new() 
+plot(Y, type='l', col='green' ,lwd=4)
+lines(yteach, col='blue',lwd=3 )
+title(main=expression(paste('Target and generated signals ', bold(y)(italic(n)), 
+                            ' starting at ', italic(n)==0 )))
+legend('bottomleft',legend=c('Target signal', 'Free-running predicted signal'), 
+       col=c('green','blue'), lty=1, bty='n' )
 
 # use the edge regression
