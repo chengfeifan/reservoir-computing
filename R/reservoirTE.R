@@ -1,14 +1,15 @@
 rm(list=ls())
 library(myCCM)
+library(TransferEntropy)
 data("cstr")
 Ca<-cstr$Ca[-1000:-1]
 Cb<-cstr$Cb[-1000:-1]
 data<-cbind(as.vector(Ca),as.vector(Cb))
-ccfvalue<-c(1:4000)
+tevalue<-c(1:4000)
 for(i in 1:4000){
   x<-Ca[i:(i+999)]
   y<-Cb[i:(i+999)]
-  ccfvalue[i]<-ccf(x,y,lag.max = 0,plot = FALSE)$acf[,,1]
+  tevalue[i]<-computeTE(x,y,embedding = 10, k=3)$TE
 }
 
 # plot some of it
@@ -19,8 +20,8 @@ title('input signal Ca')
 
 # plot the value of cross correlation function
 dev.new()
-plot(ccfvalue,type='l',main = 'The ccf value',xlab = 'Tag',
-     ylab = 'ccf')
+plot(tevalue,type='l',main = 'The TE value',xlab = 'Tag',
+     ylab = 'TEValue')
 
 dev.new()
 plot(Cb[1000:2000],type='l')
@@ -35,7 +36,7 @@ testLen<-2000
 inSize = 2
 outSize = 1
 resSize = 1000
-a = 0.8 # leaking rate
+a = 0.3 # leaking rate
 
 set.seed(42)
 Win = matrix(runif(resSize*(1+inSize),-0.5,0.5),resSize)
@@ -51,7 +52,7 @@ W = W * 1.25 / rhoW
 # allocated memory for the design (collected states) matrix
 X = matrix(0,1+inSize+resSize,trainLen-initLen)
 # set the corresponding target matrix directly
-Yt = matrix(ccfvalue[1:1000],1)
+Yt = matrix(tevalue[1:1000],1)
 
 # run the reservoir with the data and collect X
 x = rep(0,resSize)
@@ -75,27 +76,26 @@ for (t in 1:testLen){
   x = (1-a)*x + a*tanh( Win %*% rbind(1,u) + W %*% x )
   y = Wout %*% rbind(1,u,x)
   Y[,t] = y
-#   # generative mode:
-#   u = y
+  #   # generative mode:
+  #   u = y
   # this would be a predictive mode:
   u = as.matrix(data[trainLen+t+1,])
 }
 
 # compute MSE for the first errorLen time steps
 errorLen = 500
-mse = ( sum( (ccfvalue[1001:(1000+errorLen)] - Y[1,1:errorLen])^2 )
+mse = ( sum( (tevalue[1001:(1000+errorLen)] - Y[1,1:errorLen])^2 )
         / errorLen )
 print( paste( 'MSE = ', mse ) )
 
 # plot some signals
 dev.new() 
 plot( c(Y), type='l', col='green',lwd=3)
-lines( ccfvalue[1001:3000], col='blue',lwd=3)
+lines( tevalue[1001:3000], col='blue',lwd=3)
 title(main=expression(paste('Target and generated signals ', bold(y)(italic(n)), 
                             ' starting at ', italic(n)==0 )))
 legend('bottomleft',legend=c('Free-running predicted signal','Target signal'), 
-       col=c('green','blue'), lty=1, bty='n' )
-
+       col=c('green','blue'),lty=1, bty='n' )
 dev.new()
 matplot( t(X[(1:20),(1:200)]), type='l' )
 title(main=expression(paste('Some reservoir activations ', bold(x)(italic(n)))))
